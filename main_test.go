@@ -55,8 +55,8 @@ func TestFailureReturnedIfStepFails(t *testing.T) {
 func TestEnvUpdatedIfIncludedInEnvSet(t *testing.T) {
 	mockEvent := events.SQSMessage{
 		Body: `{"commands": [
-			{"title": "Test Command", "command": "echo 'Hello, World!'", "slug": "test", "include_output": true, "include_in_env": "TEST_ENV"},
-			{"title": "Echo", "command": "echo $TEST_ENV", "slug": "echo", "include_output": true },
+				{"title": "Test Command", "command": "echo 'Hello, World!'", "slug": "test", "include_output": true, "include_in_env": "TEST_ENV"},
+				{"title": "Echo", "command": "echo $TEST_ENV", "slug": "echo", "include_output": true }
 			], "env": {"TEST_ENV": "test"}}`,
 	}
 
@@ -70,5 +70,7 @@ func TestEnvUpdatedIfIncludedInEnvSet(t *testing.T) {
 		t.Errorf("HandleRecord() returned a conclusion of %s, expected %s", response.Conclusion, Success)
 	}
 
-	if response.Steps[0].Output != "Hello, World!
+	if response.Steps[0].Output != "Hello, World!\n" {
+		t.Errorf("HandleRecord() returned a step output of %s, expected %s", response.Steps[0].Output, "Hello, World!\n")
+	}
 }

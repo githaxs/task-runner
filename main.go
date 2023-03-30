@@ -60,7 +60,7 @@ func (r *Command) Run(env map[string]string) (*Command, error) {
 	if val, ok := env["DIR"]; ok && r.Slug != "clone" && r.Slug != "git_config" {
 		dir = val
 	}
-	fmt.Printf("Running command: %s in %s\n", r.Command, dir)
+	fmt.Printf("Executing: %s in directory %s\n", r.Command, dir)
 	cmd := exec.Command("/bin/sh", "-c", r.Command)
 	cmd.Env = os.Environ()
 	for k, v := range env {
@@ -83,11 +83,11 @@ func (r *Command) Run(env map[string]string) (*Command, error) {
 
 	stop := time.Now()
 
-	fmt.Printf("%s", stdout)
+	// Task has passed to complete the information on the step
+	fmt.Printf("Task Output: %s", stdout)
 	r.Duration = stop.Sub(start).Seconds()
 	r.ExitCode = 0
 	r.Completed = true
-	fmt.Println(r.IncludeOutput)
 	if r.IncludeOutput {
 		r.Output += fmt.Sprintf("%s", stdout)
 	}
@@ -99,7 +99,7 @@ func (t *Request) Run() (bool, []Command) {
 	var result []Command
 
 	for _, command := range t.Commands {
-		fmt.Printf("Running command: %s\n", command.Title)
+		fmt.Printf("Running %s Command\n", command.Title)
 		if !skipNonEssential || command.RunOnFail {
 			step, err := command.Run(t.Env)
 			if err != nil {
@@ -121,7 +121,7 @@ func (t *Request) Run() (bool, []Command) {
 				t.Env[step.IncludeInEnv] = step.Output
 			}
 
-			if (step.Slug == "terraform_plan" && step.ExitCode != 0 && step.ExitCode != 2) || (step.Slug != "terraform_plan" && step.ExitCode != 0) {
+			if step.ExitCode != 0 {
 				skipNonEssential = true
 			}
 		}
