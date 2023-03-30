@@ -16,18 +16,18 @@ import (
 )
 
 type Command struct {
-	Title         string        `json:"title"`
-	Slug          string        `json:"slug"`
-	Command       string        `json:"command"`
-	Check         bool          `json:"check"`
-	FailMessage   string        `json:"fail_message"`
-	RunOnFail     bool          `json:"run_on_fail"`
-	IncludeOutput bool          `json:"include_output"`
-	IncludeInEnv  string        `json:"include_in_env"`
-	Completed     bool          `json:"completed"`
-	Duration      time.Duration `json:"duration"`
-	ExitCode      int           `json:"exit_code"`
-	Output        string        `json:"output"`
+	Title         string  `json:"title"`
+	Slug          string  `json:"slug"`
+	Command       string  `json:"command"`
+	Check         bool    `json:"check"`
+	FailMessage   string  `json:"fail_message"`
+	RunOnFail     bool    `json:"run_on_fail"`
+	IncludeOutput bool    `json:"include_output"`
+	IncludeInEnv  string  `json:"include_in_env"`
+	Completed     bool    `json:"completed"`
+	Duration      float64 `json:"duration"`
+	ExitCode      int     `json:"exit_code"`
+	Output        string  `json:"output"`
 }
 
 type Request struct {
@@ -84,7 +84,7 @@ func (r *Command) Run(env map[string]string) (*Command, error) {
 	stop := time.Now()
 
 	fmt.Printf("%s", stdout)
-	r.Duration = stop.Sub(start)
+	r.Duration = stop.Sub(start).Seconds()
 	r.ExitCode = 0
 	r.Completed = true
 	fmt.Println(r.IncludeOutput)
